@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How a Browser Renders a Website — Animated Simulation</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#050a1c;color:#dbe7ff;font-family:system-ui,"Segoe UI",Arial,sans-serif;min-height:100vh;display:flex;justify-content:center;align-items:center}
+#w{width:min(100vw,calc((100vh - 120px)*16/9));padding:6px}
+svg{width:100%;display:block;border-radius:12px;box-shadow:0 0 40px #0b3a8a66}
+text{font-family:system-ui,"Segoe UI",Arial,sans-serif}
+#bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+button{background:#12306b;color:#e6f0ff;border:1px solid #2f6fe0;border-radius:8px;padding:7px 13px;font-size:14px;cursor:pointer}
+button:hover{background:#1d4592}button.on{background:#22d3ee;color:#04122e;border-color:#22d3ee}
+#pr{flex:1;min-width:140px;accent-color:#22d3ee}
+#sc{font-weight:700;color:#22d3ee;margin-top:6px;font-size:15px}
+#sub{min-height:44px;margin-top:4px;font-size:17px;color:#fff;background:#0d1d47;border-left:4px solid #22d3ee;border-radius:6px;padding:8px 12px}
+</style></head><body>
+<div id="w">
+<svg id="s" viewBox="0 0 960 540" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#08112c"/><stop offset="1" stop-color="#0c2252"/></linearGradient>
+<filter id="gl" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<rect width="960" height="540" fill="url(#bg)"/>
+<text id="cap" x="480" y="38" text-anchor="middle" font-size="22" font-weight="700" fill="#fff"></text>
+<text id="cap2" x="480" y="64" text-anchor="middle" font-size="14" fill="#9fb4e6"></text>
+<g id="LC">
+<text x="137" y="84" text-anchor="middle" font-size="11" fill="#7f9bd6">CODE FILES</text>
+<g id="cards"></g><polygon id="rd" points="0,-5 9,0 0,5" fill="#22d3ee"/>
+<rect x="270" y="90" width="340" height="350" rx="12" fill="#0f1c44" stroke="#2f6fe0" stroke-width="2"/>
+<text x="440" y="106" text-anchor="middle" font-size="11" fill="#7f9bd6">BROWSER ENGINE</text>
+<g id="strip"></g>
+<g id="vd"><g id="edges"></g><line id="ca" stroke="#a855f7" stroke-width="3" stroke-dasharray="6 5"/><g id="nodes"></g>
+<g id="hdl"><rect x="318" y="398" width="244" height="30" rx="8" fill="#3a3207" stroke="#facc15" stroke-width="2"/><text x="440" y="417" text-anchor="middle" font-size="11" fill="#facc15">handler: textContent = 'Welcome!'</text></g>
+<g id="evc"><circle r="14" fill="#facc15"/><text y="3" text-anchor="middle" font-size="8" font-weight="800" fill="#111">click</text></g></g>
+<g id="vl"><text x="290" y="168" font-size="11" fill="#7f9bd6">ELEMENT</text><text x="395" y="168" font-size="11" fill="#7f9bd6">x</text><text x="445" y="168" font-size="11" fill="#7f9bd6">y</text><text x="495" y="168" font-size="11" fill="#7f9bd6">width</text><text x="545" y="168" font-size="11" fill="#7f9bd6">height</text><g id="rows"></g></g>
+<g id="vp"><g id="prow"></g></g>
+<g id="vq"><g id="lanes"></g>
+<rect x="520" y="160" width="80" height="215" rx="8" fill="#081028" stroke="#22d3ee" stroke-width="2"/><rect id="rf" x="523" width="74" fill="#22d3ee" fill-opacity=".35"/>
+<text x="560" y="262" text-anchor="middle" font-size="12" font-weight="800" fill="#22d3ee">RENDER</text><text x="560" y="278" text-anchor="middle" font-size="9" fill="#9fb4e6">pixels on screen</text>
+<line id="ra" x1="602" y1="267" x2="616" y2="267" stroke="#22d3ee" stroke-width="3" stroke-dasharray="4 3"/><polygon points="620,267 611,262 611,272" fill="#22d3ee"/>
+<text x="440" y="408" text-anchor="middle" font-size="11" fill="#9fb4e6">Some steps wait for others — not everything runs at once.</text></g>
+</g>
+<g id="R">
+<rect id="pfr" x="620" y="90" width="320" height="350" rx="10" fill="#0f1c44" stroke="#2f6fe0" stroke-width="2"/>
+<rect id="fG" x="620" y="90" width="320" height="350" rx="10" fill="none" stroke="#22c55e" stroke-width="5" filter="url(#gl)" opacity="0"/>
+<rect x="620" y="90" width="320" height="24" rx="10" fill="#16275a"/><circle cx="634" cy="102" r="4" fill="#ef4444"/><circle cx="647" cy="102" r="4" fill="#f59e0b"/><circle cx="660" cy="102" r="4" fill="#22c55e"/>
+<text x="780" y="106" text-anchor="middle" font-size="10" fill="#9fb4e6">mysite.com</text>
+<rect id="pbg" x="625" y="114" width="310" height="321" fill="#fff"/>
+<g id="pel"></g>
+<g id="toast"><rect x="650" y="392" width="260" height="34" rx="8" fill="#0f3d2a" stroke="#22c55e" stroke-width="2"/><text x="780" y="413" text-anchor="middle" font-size="12" fill="#fff">✓ Welcome! Button was clicked</text></g>
+<g id="cur"><polygon points="0,0 0,20 6,15 11,25 15,23 10,13 18,13" fill="#fff" stroke="#000"/></g>
+</g>
+<text id="ptag" x="780" y="458" text-anchor="middle" font-size="12" font-weight="700" fill="#22d3ee"></text>
+<g id="fly"><rect x="-30" y="-20" width="60" height="40" rx="6" id="flr"/><text id="flt" y="5" text-anchor="middle" font-size="13" font-weight="800" fill="#111"></text></g>
+<g id="tks"></g>
+</svg>
+<div id="sc"></div><div id="sub"></div>
+<div id="bar"><button id="bp">▶ Play</button><button id="bq">⏸ Pause</button><button id="br">⟲ Replay</button><button id="s1" class="on">1x</button><button id="s2">2x</button><input id="pr" type="range" min="0" max="1000" value="0"><span id="tm" style="font-size:13px"></span></div>
+</div>
+<script>
+const g=id=>document.getElementById(id),Lp=(a,b,p)=>a+(b-a)*p,Ez=p=>p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2,SIN=p=>Math.sin(p*Math.PI),CL=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const hx=c=>[1,3,5].map(i=>parseInt(c.substr(i,2),16)),mix=(a,b,p)=>{const x=hx(a),y=hx(b);return'#'+x.map((v,i)=>Math.round(v+(y[i]-v)*p).toString(16).padStart(2,'0')).join('')};
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const B='#3b82f6',G='#22c55e',O='#f59e0b',PU='#a855f7',YE='#facc15',CY='#22d3ee',PK='#f472b6',OR='#fb923c';
+const set=(id,o)=>{const e=g(id);for(const k in o)e.setAttribute(k,o[k])};
+/* ---------- static builds ---------- */
+const cards=[{n:'index.html',c:OR,y:90,h:165,l:['<html>','  <head></head>','  <body>','    <nav>Home About</nav>','    <h1>Hello Web</h1>','    <p>Code becomes pixels</p>','    <img src="pic.png">','    <button>Get Started</button>','  </body>','</html>']},
+{n:'style.css',c:PU,y:265,h:92,l:['h1 {color:#22d3ee;font-size:28px}','p {color:#9fb4e6;margin:12px}','button {background:#3b82f6}','body {background:#0b1b3f}']},
+{n:'app.js',c:YE,y:364,h:68,l:["button.addEventListener('click',","  () => button.textContent='Welcome!')"]}];
+g('cards').innerHTML=cards.map((c,i)=>`<g id="cd${i}"><rect x="20" y="${c.y}" width="235" height="${c.h}" rx="8" fill="#0f1c44" stroke="${c.c}" stroke-width="2"/><rect x="20" y="${c.y}" width="235" height="20" rx="8" fill="${c.c}" fill-opacity=".3"/><text x="30" y="${c.y+14}" font-size="11" font-weight="700" fill="${c.c}">${c.n}</text><rect id="hr${i}" x="24" width="227" height="13" fill="${c.c}" fill-opacity=".4" opacity="0"/>${c.l.map((s,j)=>`<text x="29" y="${c.y+37+j*13}" font-size="9.5" font-family="monospace" style="white-space:pre" fill="#cfe0ff">${esc(s)}</text>`).join('')}</g>`).join('');
+const stN=['DOM','Styles','Layout','Paint','JS'];
+g('strip').innerHTML=stN.map((n,i)=>`<rect id="st${i}" x="${278+i*66}" y="116" width="58" height="22" rx="11" fill="#22d3ee" stroke="#22d3ee"/><text x="${307+i*66}" y="131" text-anchor="middle" font-size="11" font-weight="700" fill="#04122e">${n}</text>`).join('');
+const NL=['Document','html','head','body','nav','h1','p','img','button'],NP=[-1,0,1,1,3,3,3,3,3],NX=[[370,185],[370,240],[300,300],[440,300],[332,370],[386,370],[440,370],[494,370],[548,370]],NW=[74,44,46,46,46,46,46,46,52];
+g('edges').innerHTML=NL.map((n,k)=>k?`<line id="e${k}" stroke="#22d3ee" stroke-width="2.5"/>`:'').join('');
+g('nodes').innerHTML=NL.map((n,k)=>`<g id="n${k}"><rect x="${-NW[k]/2}" y="-12" width="${NW[k]}" height="24" rx="7" fill="#12306b" stroke="#22d3ee" stroke-width="2"/><text y="4" text-anchor="middle" font-size="10.5" font-weight="700" fill="#fff">${n}</text></g>`).join('');
+const EN=['nav','h1','p','img','button'];
+g('rows').innerHTML=EN.map((n,i)=>`<g id="lr${i}"><rect x="284" y="${180+i*40}" width="312" height="32" rx="6" fill="#12306b" fill-opacity=".6" stroke="#22d3ee" stroke-dasharray="5 4"/><text x="294" y="${201+i*40}" font-size="13" font-weight="700" fill="#22d3ee">${n}</text>${[395,445,495,545].map((x,j)=>`<text id="lv${i}_${j}" x="${x}" y="${201+i*40}" font-size="13" font-family="monospace" fill="#fff"></text>`).join('')}</g>`).join('');
+const PL=['1  Backgrounds','2  Text','3  Borders','4  Images','5  Shadows'];
+g('prow').innerHTML=PL.map((n,i)=>`<text x="290" y="${192+i*46}" font-size="14" fill="#cfe0ff">${n}</text><rect x="420" y="${180+i*46}" width="150" height="14" rx="7" fill="#142a63"/><rect id="pb${i}" x="420" y="${180+i*46}" height="14" rx="7" fill="#3b82f6"/><text id="pc${i}" x="578" y="${193+i*46}" font-size="15" fill="#22c55e">✓</text>`).join('');
+const LN=[['HTML parsing',CY,0,.7],['CSS processing',PU,.15,.6],['Images & fonts loading',PK,.2,1],['JavaScript (load + run)',YE,.45,.9]];
+g('lanes').innerHTML=LN.map((l,i)=>{const y=175+i*52;return`<text x="285" y="${y-6}" font-size="11" fill="${l[1]}">${l[0]}</text><rect x="285" y="${y}" width="190" height="16" rx="8" fill="#142a63"/><rect id="lf${i}" x="285" y="${y}" height="16" rx="8" fill="${l[1]}"/><line x1="480" y1="${y+8}" x2="514" y2="${y+8}" stroke="${l[1]}" stroke-width="2" opacity=".5"/><polygon points="518,${y+8} 509,${y+3} 509,${y+13}" fill="${l[1]}"/><circle id="ld${i}" r="4" cy="${y+8}" fill="#fff"/>`}).join('');
+const PR=[[632,124,150,14],[632,146,120,18],[632,170,200,14],[632,208,40,30],[632,248,86,16]],FR=[[630,122,300,32],[650,170,260,40],[650,222,260,46],[650,282,130,90],[800,312,110,36]];
+g('pel').innerHTML=EN.map((n,i)=>`<rect id="sh${i}" fill="#000" opacity="0"/><rect id="bx${i}"/>${i==3?'<g id="img"><rect width="130" height="90" rx="8" fill="#7dd3fc"/><circle cx="100" cy="26" r="12" fill="#fde047"/><polygon points="0,90 40,35 75,75 95,55 130,90" fill="#16a34a"/></g>':''}<rect id="wf${i}" fill="none" stroke="#22d3ee" stroke-width="1.5" stroke-dasharray="5 4"/><text id="wl${i}" font-size="9" fill="#22d3ee"></text><text id="tx${i}" font-weight="${i==1?800:400}"></text>`).join('');
+g('tks').innerHTML=[['DOM',CY],['CSS',PU],['LAYOUT',B],['PAINT',G],['JS',YE]].map((t,i)=>`<g id="tk${i}"><circle r="20" fill="${t[1]}"/><text y="4" text-anchor="middle" font-size="9" font-weight="800" fill="#111">${t[0]}</text></g>`).join('');
+
+/* ---------- timeline ---------- */
+const E=[],N=[],SC=[];let T=0,S={};
+const A=(d,f,k)=>{E.push({s:T,d,f,k});T+=d},P=(d,f,k)=>{E.push({s:T,d,f,k})},W=d=>{T+=d},K=f=>E.push({s:T,d:0,f,k:1});
+const nar=t=>N.push({s:T,t}),sc=n=>SC.push({s:T,n}),cap=(t,c,s2)=>K(()=>{S.cap=t;S.capc=c||'#fff';S.cap2=s2||''});
+const flyIn=(i,c,n)=>A(1.2,p=>S.fly={x:Lp(262,300,Ez(p)),y:Lp(cards[i].y+cards[i].h/2,i==0?200:260,Ez(p)),n,c,o:1-CL((p-.7)/.3)});
+/* Scene 1 */
+sc('Scene 1/7 — HTML Parsing');nar('Browser HTML parse karke DOM, yaani Document Object Model, create karta hai.');
+K(()=>{S.v='dom';S.stg=0;S.act=0;S.ptag='Plain HTML (no CSS yet)'});cap('HTML Parsing...',CY,'The browser reads the HTML file line by line');
+A(.8,p=>S.cf[0]=p,1);flyIn(0,OR,'HTML');
+const LNod=[[0,1],[2],[3],[4],[5],[6],[7],[8],[],[]];
+for(let i=0;i<10;i++)A(.85,p=>{S.rl=i;for(const k of LNod[i])S.nd[k]=CL(p*1.5)},1);
+K(()=>S.rl=-1);cap('DOM (Document Object Model) Created',G,'Every tag became a node in a tree');
+A(1.6,p=>S.dg=SIN(p));W(1.2);
+/* Scene 2 */
+sc('Scene 2/7 — CSS Processing');nar('CSS process hoti hai.');
+K(()=>{S.stg=1;S.act=1;S.dg=0});cap('CSS Processing...',PU,'Plain HTML page (before CSS)');
+A(.8,p=>S.cf[1]=p,1);flyIn(1,PU,'CSS');
+cap('CSS Processing...',PU,'Each rule finds the elements it styles');
+for(let r=0;r<4;r++)A(1.6,p=>{S.rr=r;S.cs[r]=Ez(p)},1);
+K(()=>{S.rr=-1;S.ptag='After CSS: styled page'});cap('Styles Applied',G,'Colors, font sizes, spacing and background changed');W(1.4);
+/* Scene 3 */
+sc('Scene 3/7 — Layout');nar('Browser layout calculate karta hai.');
+K(()=>{S.v='lay';S.stg=2;S.act=-1;S.ptag='Layout boxes'});cap('Calculating Layout...',CY,'Where does each element go, and how much space does it need?');
+for(let i=0;i<5;i++)A(.6,p=>S.bx[i]=p,1);W(.3);
+for(let i=0;i<5;i++)A(1,p=>S.ly[i]=Ez(p),1);
+cap('Element Positions & Dimensions',CY,'Every element now has a position (x, y) and a size (width, height)');W(1.5);
+/* Scene 4 */
+sc('Scene 4/7 — Painting');nar('Aur phir page ke visual elements screen par paint hote hain.');
+K(()=>{S.v='pt';S.stg=3;S.ptag='Painting'});cap('Painting Pixels...',B,'Empty boxes first, then colors, text, borders, images and shadows');
+A(.8,p=>{S.tx=1-p;S.bf=1-p},1);W(.3);
+A(1.3,p=>{S.pa=p;S.bf=p},1);A(1.2,p=>{S.tx=p;S.txp=p},1);A(1.2,p=>S.pb=p,1);A(1.4,p=>S.pi=p,1);A(1.2,p=>S.ps=p,1);
+K(()=>S.ptag='Painted page');cap('Visual Elements Rendered',G,'Wireframe boxes became a polished page');W(1.3);
+/* Scene 5 */
+sc('Scene 5/7 — JavaScript');nar('JavaScript bhi page ko dynamically update kar sakta hai.');
+K(()=>{S.v='dom';S.stg=4;S.act=2;S.jsv=1;S.ptag='JavaScript can change the page'});cap('JavaScript Executed',YE,'JS can run while the page loads and long after it — not only after painting');
+A(.8,p=>S.cf[2]=p,1);flyIn(2,YE,'JS');
+A(1,p=>S.rj=0,1);
+A(1.5,p=>S.cur={x:Lp(915,855,Ez(p)),y:Lp(230,330,Ez(p))},1);
+A(.5,p=>{S.cur={x:855,y:330};S.pr=SIN(p)},1);
+A(1.3,p=>S.ev={x:Lp(855,440,Ez(p)),y:Lp(330,412,Ez(p))});
+A(.8,p=>{S.rj=1;S.hd=p},1);
+A(1,p=>{S.jt=p;S.nf=SIN(p)},1);A(.9,p=>S.toast=Ez(p),1);
+cap('DOM Updated Dynamically',G,'The page changed without a reload');W(1.8);K(()=>S.cur=null);
+/* Scene 7 (final) */
+sc('Scene 7/7 — Final Website');nar('Aur finally...');
+K(()=>{S.v='';S.stg=5;S.act=-1;S.jsv=0;S.ptag=''});cap('HTML + CSS + JavaScript',CY,'DOM, styles, layout, paint and interaction come together');
+nar('Tumhare saamne website appear ho jaati hai.');
+A(3,p=>S.tk=p);A(1.3,p=>S.fz=Ez(p),1);
+cap('Transformed Into a Website!',G,'Heading, paragraph, image, navigation and an interactive button');W(2.5);
+/* Scene 6 (parallel) */
+sc('Scene 6/7 — Parallel Processing');nar('Lekin yaad rakhna...');
+A(1.2,p=>S.fz=1-Ez(p),1);K(()=>{S.v='par';S.stg=6;S.act=-1});
+nar('Ye process ek simple straight line nahi hai.');cap('Browser Does Not Always Work in One Straight Line',O,'HTML, CSS, resources and JavaScript each make progress');
+P(10,p=>S.par=p,1);W(3.5);
+nar('Browser resources ko different ways mein load aur process kar sakta hai. Kuch kaam parallel bhi hote hain.');
+cap('Some Tasks Can Overlap or Run in Parallel',CY,'Arrows show every activity feeding the rendering process');W(6.5);
+K(()=>{S.fin=1;S.v='';S.stg=5});cap('Website Successfully Rendered!',G,'');W(4);
+const TOT=T;
+
+/* ---------- render ---------- */
+let t=0,play=true,spd=1,drag=false,last=performance.now();
+function frame(){
+ S={cf:[0,0,0],act:-1,fly:null,rl:-1,rr:-1,rj:-1,nd:Array(9).fill(0),dg:0,cs:[0,0,0,0],v:'',stg:-1,bx:[0,0,0,0,0],ly:[0,0,0,0,0],tx:1,bf:1,txp:0,pa:0,pb:0,pi:0,ps:0,jt:0,nf:0,hd:0,ev:null,cur:null,pr:0,toast:0,jsv:0,fz:0,tk:0,par:0,fin:0,ptag:'',cap:'',capc:'#fff',cap2:''};
+ for(const e of E){if(t<e.s)continue;if(t>e.s+e.d&&!e.k)continue;e.f(e.d?Math.min(1,(t-e.s)/e.d):1)}
+ draw();
+}
+function rect(i){const p=PR[i].slice(),f=FR[i],l=S.ly[i];if(i==2||i==4)p[1]+=10*S.cs[1];return p.map((v,j)=>Lp(v,f[j],l))}
+function draw(){
+ const f=S.fz,pg=1-f;g('LC').style.opacity=pg;
+ g('R').setAttribute('transform',`translate(${300*-f} 0) translate(780 265) scale(${1+.15*f}) translate(-780 -265)`);
+ g('ptag').style.opacity=pg;
+ g('cap').textContent=S.cap;g('cap').setAttribute('fill',S.capc);g('cap2').textContent=S.cap2;
+ /* cards */
+ cards.forEach((c,i)=>{g('cd'+i).style.opacity=S.cf[i]*(S.act==i?1:.45);const ln=[S.rl,S.rr,S.rj][i];g('hr'+i).setAttribute('y',c.y+27+ln*13);g('hr'+i).setAttribute('opacity',ln>=0&&S.act==i?1:0)});
+ const rd=g('rd');rd.style.display=S.rl>=0?'':'none';rd.setAttribute('transform',`translate(260 ${90+27+S.rl*13+6.5})`);
+ const fl=S.fly;g('fly').style.display=fl?'':'none';if(fl){g('fly').setAttribute('transform',`translate(${fl.x} ${fl.y})`);g('fly').style.opacity=fl.o;g('flr').setAttribute('fill',fl.c);g('flt').textContent=fl.n}
+ for(let i=0;i<5;i++){const a=S.stg==6?.6+.4*Math.sin(t*5):S.stg==5?.5:i<S.stg?.5:i==S.stg?1:.1;set('st'+i,{'fill-opacity':a})}
+ g('vd').style.display=S.v=='dom'?'':'none';g('vl').style.display=S.v=='lay'?'':'none';g('vp').style.display=S.v=='pt'?'':'none';g('vq').style.display=S.v=='par'?'':'none';
+ /* DOM tree */
+ const TG=[5,6,8,3];
+ for(let k=0;k<9;k++){const n=S.nd[k],[x,y]=NX[k],nd=g('n'+k);nd.setAttribute('transform',`translate(${x} ${y}) scale(${Math.max(.001,n)})`);nd.style.opacity=n;
+  const ci=TG.indexOf(k),ms=ci>=0&&S.cs[ci]>0,r=nd.firstChild;r.setAttribute('fill',k==8&&S.nf>0?'#6b5a06':ms?'#3b1d6e':'#12306b');r.setAttribute('stroke',k==8&&S.nf>0?YE:ms?PU:S.dg>0?G:CY);r.setAttribute('stroke-width',2+2*S.dg);
+  if(k){const [px,py]=NX[NP[k]];set('e'+k,{x1:px,y1:py+12,x2:Lp(px,x,n),y2:Lp(py+12,y-12,n),opacity:n>0?1:0})}}
+ g('n8').lastChild.textContent=S.jt>.5?'button*':'button';
+ const ca=g('ca');if(S.rr>=0){const [x,y]=NX[TG[S.rr]];set('ca',{x1:262,y1:265+33+S.rr*13,x2:x-20,y2:y,opacity:1,'stroke-dashoffset':-t*30})}else ca.setAttribute('opacity',0);
+ g('hdl').style.opacity=S.jsv?S.hd:0;const ev=S.ev;g('evc').style.display=ev&&S.jsv?'':'none';if(ev)g('evc').setAttribute('transform',`translate(${ev.x*0+Lp(440,ev.x,1)-0} ${ev.y})`);
+ /* layout table */
+ for(let i=0;i<5;i++){const r=rect(i);g('lr'+i).style.opacity=S.bx[i];[r[0]-625,r[1]-114,r[2],r[3]].forEach((v,j)=>{const e=g(`lv${i}_${j}`);e.textContent=Math.round(v);e.setAttribute('fill',S.ly[i]>0&&S.ly[i]<1?CY:'#fff')})}
+ /* paint list */
+ [S.pa,S.txp,S.pb,S.pi,S.ps].forEach((v,i)=>{g('pb'+i).setAttribute('width',150*v);g('pc'+i).style.opacity=v>=.999?1:0});
+ /* parallel */
+ LN.forEach((l,i)=>{const p=CL((S.par-l[2])/(l[3]-l[2]));g('lf'+i).setAttribute('width',190*p);const d=g('ld'+i);d.style.opacity=p>0&&p<1?1:0;d.setAttribute('cx',480+34*((t*1.6+i*.3)%1))});
+ const rp=CL(S.par),rh=211*rp;set('rf',{y:373-rh,height:rh});
+ /* page */
+ g('pbg').setAttribute('fill',mix('#ffffff','#0b1b3f',S.cs[3]));
+ g('fG').style.opacity=S.fin?.6+.4*Math.sin(t*4):0;
+ const M=[4,5,6,7,8],fs=[Lp(11,13,S.cs[3]),Lp(18,28,S.cs[0]),Lp(11,14,S.cs[1]),0,Lp(11,13,S.cs[2])],col=[mix('#000000','#cfe0ff',S.cs[3]),mix('#000000','#22d3ee',S.cs[0]),mix('#000000','#9fb4e6',S.cs[1]),'',mix('#000000','#ffffff',S.cs[2])];
+ const txt=['Home    About    Contact','Hello Web','Code becomes pixels','',S.jt>.5?'Welcome!':'Get Started'];
+ for(let i=0;i<5;i++){
+  const r=rect(i),a=i==3?1:S.nd[M[i]],l=S.ly[i];
+  const bx=g('bx'+i),sh=g('sh'+i),wf=g('wf'+i),wl=g('wl'+i),tx=g('tx'+i);
+  const geo=(e,d=0,dy=0)=>{e.setAttribute('x',r[0]+d);e.setAttribute('y',r[1]+dy);e.setAttribute('width',r[2]);e.setAttribute('height',r[3])};
+  geo(bx);geo(sh,4,6);geo(wf);
+  let fill='none',fo=0,st='none',so=0,rx=8;
+  if(i==0){fill='#12306b';fo=S.pa;st='#2f6fe0';so=S.pb;rx=0}
+  if(i==2){fill='#0f2a5e';fo=S.pa;st='#2f6fe0';so=S.pb}
+  if(i==3){fill='#0b1b3f';fo=S.pa*.6;st='#7dd3fc';so=S.pb}
+  if(i==4){const cs=S.cs[2]>.5;fill=S.jt>.5?G:cs?B:'#e5e7eb';fo=a*S.bf;st=cs?'#93c5fd':'#9ca3af';so=a*S.bf;rx=Lp(3,17,S.cs[2])}
+  set('bx'+i,{fill,'fill-opacity':fo,stroke:st,'stroke-opacity':so,rx,'stroke-width':i==4?1.5:2});
+  sh.setAttribute('rx',rx);sh.setAttribute('opacity',i>=2?S.ps*.5:0);
+  wf.setAttribute('opacity',S.bx[i]*(1-S.pa));wf.setAttribute('rx',rx);
+  wl.textContent=S.bx[i]>0?`${EN[i]} ${Math.round(r[2])}×${Math.round(r[3])}`:'';wl.setAttribute('x',r[0]+2);wl.setAttribute('y',r[1]-3);wl.setAttribute('opacity',S.bx[i]*(1-S.pa));
+  if(i==3){const im=g('img');im.setAttribute('transform',`translate(${r[0]} ${r[1]}) scale(${r[2]/130} ${r[3]/90})`);im.setAttribute('opacity',S.pi)}
+  else{tx.textContent=txt[i];tx.setAttribute('font-size',fs[i]);tx.setAttribute('fill',col[i]);tx.setAttribute('opacity',a*S.tx);tx.setAttribute('font-family',i==4||S.cs[0]>.5&&i==1?'system-ui,Arial,sans-serif':'Georgia,serif');
+   if(i==4){tx.setAttribute('x',r[0]+r[2]/2);tx.setAttribute('text-anchor','middle');tx.setAttribute('fill',S.jt>.5?'#04210f':col[4])}else{tx.setAttribute('x',r[0]+Lp(0,12,l))}
+   tx.setAttribute('y',r[1]+r[3]/2+fs[i]*.35)}
+  if(i==4){const pr=1-.08*S.pr,cx=r[0]+r[2]/2,cy=r[1]+r[3]/2,T2=`translate(${cx} ${cy}) scale(${pr}) translate(${-cx} ${-cy})`;[bx,tx].forEach(e=>e.setAttribute('transform',T2))}
+ }
+ g('toast').style.opacity=S.toast;g('toast').setAttribute('transform',`translate(0 ${(1-S.toast)*30})`);
+ const cu=S.cur;g('cur').style.display=cu?'':'none';if(cu)g('cur').setAttribute('transform',`translate(${cu.x} ${cu.y})`);
+ g('ptag').textContent=S.ptag;
+ /* scene-7 tokens */
+ for(let i=0;i<5;i++){const q=CL(S.tk*1.7-i*.15),e=g('tk'+i);e.style.display=q>0&&q<1?'':'none';e.setAttribute('transform',`translate(${Lp(440,780,Ez(q))} ${Lp(170+i*45,265,Ez(q))}) scale(${1-.5*q})`)}
+ let sn='',sb='';for(const x of SC)if(t>=x.s)sn=x.n;for(const x of N)if(t>=x.s)sb=x.t;
+ g('sc').textContent=sn;g('sub').textContent=sb?'🔊 '+sb:'';
+ if(!drag)g('pr').value=t/TOT*1000;g('tm').textContent=Math.floor(t)+'s / '+Math.floor(TOT)+'s';
+ g('bp').classList.toggle('on',play);g('bq').classList.toggle('on',!play);
+}
+function loop(n){const dt=Math.min(.1,(n-last)/1000);last=n;if(play&&!drag){t+=dt*spd;if(t>=TOT){t=TOT;play=false}}frame();requestAnimationFrame(loop)}
+g('bp').onclick=()=>{if(t>=TOT)t=0;play=true};g('bq').onclick=()=>play=false;
+g('br').onclick=()=>{t=0;play=true};
+g('s1').onclick=()=>{spd=1;g('s1').classList.add('on');g('s2').classList.remove('on')};
+g('s2').onclick=()=>{spd=2;g('s2').classList.add('on');g('s1').classList.remove('on')};
+g('pr').oninput=e=>{drag=true;t=e.target.value/1000*TOT};g('pr').onchange=()=>drag=false;g('pr').onpointerup=()=>drag=false;
+requestAnimationFrame(n=>{last=n;loop(n)});
+</script>
+</body></html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How HTTP Works — Animated Simulation</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#050a1c;color:#dbe7ff;font-family:system-ui,"Segoe UI",Arial,sans-serif;min-height:100vh;display:flex;justify-content:center;align-items:center}
+#w{width:min(100vw,calc((100vh - 120px)*16/9));padding:6px}
+svg{width:100%;display:block;border-radius:12px;box-shadow:0 0 40px #0b3a8a66}
+text{font-family:system-ui,"Segoe UI",Arial,sans-serif}
+#bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+button{background:#12306b;color:#e6f0ff;border:1px solid #2f6fe0;border-radius:8px;padding:7px 13px;font-size:14px;cursor:pointer}
+button:hover{background:#1d4592}button.on{background:#22d3ee;color:#04122e;border-color:#22d3ee}
+#pr{flex:1;min-width:140px;accent-color:#22d3ee}
+#sc{font-weight:700;color:#22d3ee;margin-top:6px;font-size:15px}
+#sub{min-height:44px;margin-top:4px;font-size:17px;color:#fff;background:#0d1d47;border-left:4px solid #22d3ee;border-radius:6px;padding:8px 12px}
+</style></head><body>
+<div id="w">
+<svg id="s" viewBox="0 0 960 540" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#08112c"/><stop offset="1" stop-color="#0c2252"/></linearGradient>
+<filter id="gl" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="960" height="540" fill="url(#bg)"/>
+<text id="cap" x="480" y="40" text-anchor="middle" font-size="22" font-weight="700" fill="#fff"></text>
+<text id="cap2" x="480" y="68" text-anchor="middle" font-size="14" fill="#9fb4e6"></text>
+<!-- network -->
+<path id="l1" d="M325 235H630" stroke="#3b82f6" stroke-width="4" stroke-dasharray="12 10" opacity=".55"/>
+<polygon points="634,235 614,225 614,245" fill="#3b82f6"/>
+<path id="l2" d="M635 335H330" stroke="#22c55e" stroke-width="4" stroke-dasharray="12 10" opacity=".55"/>
+<polygon points="326,335 346,325 346,345" fill="#22c55e"/>
+<text x="480" y="205" text-anchor="middle" font-size="12" fill="#3b82f6">REQUEST →</text>
+<text x="480" y="368" text-anchor="middle" font-size="12" fill="#22c55e">← RESPONSE</text>
+<text x="480" y="290" text-anchor="middle" font-size="11" fill="#5f7cb8">INTERNET / NETWORK</text>
+<!-- browser -->
+<text x="175" y="97" text-anchor="middle" font-size="15" font-weight="700" fill="#22d3ee">CLIENT / BROWSER</text>
+<rect id="brG" x="30" y="105" width="290" height="330" rx="12" fill="none" stroke="#22d3ee" stroke-width="5" filter="url(#gl)" opacity="0"/>
+<rect x="30" y="105" width="290" height="330" rx="12" fill="#0f1c44" stroke="#2f6fe0" stroke-width="2"/>
+<rect x="30" y="105" width="290" height="38" rx="12" fill="#16275a"/>
+<circle cx="46" cy="124" r="5" fill="#ef4444"/><circle cx="62" cy="124" r="5" fill="#f59e0b"/><circle cx="78" cy="124" r="5" fill="#22c55e"/>
+<rect x="92" y="112" width="220" height="24" rx="12" fill="#081028"/>
+<text id="url" x="104" y="128" font-size="12" fill="#cfe0ff" font-family="monospace"></text>
+<rect x="45" y="150" width="260" height="270" rx="6" fill="#13224f"/>
+<g id="ui"><text x="175" y="215" text-anchor="middle" font-size="13" fill="#9fb4e6">Type a URL, then click the button</text>
+<g id="btn"><rect x="95" y="265" width="160" height="40" rx="20" fill="#3b82f6"/><text x="175" y="290" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">OPEN WEBSITE</text></g></g>
+<g id="doc"><g transform="translate(175 275)"><rect x="-38" y="-48" width="76" height="96" rx="6" fill="#e8f1ff"/><polygon points="18,-48 38,-28 18,-28" fill="#9ec3ff"/><rect x="-26" y="-14" width="48" height="5" fill="#6b8fd6"/><rect x="-26" y="-2" width="40" height="5" fill="#6b8fd6"/><rect x="-26" y="10" width="46" height="5" fill="#6b8fd6"/><text y="-24" x="-4" text-anchor="middle" font-size="10" font-weight="700" fill="#1e3a8a">&lt;html&gt;</text><text y="70" text-anchor="middle" font-size="13" fill="#22d3ee">index.html</text></g></g>
+<g id="code"><rect x="52" y="155" width="246" height="138" rx="6" fill="#081028" stroke="#22d3ee"/><g id="codeL"></g><rect id="scn" x="52" y="160" width="246" height="3" fill="#22d3ee"/></g>
+<g id="icons"></g>
+<g id="pg"><rect id="pgw" x="45" y="150" width="260" height="270" rx="6" fill="#fff"/>
+<rect id="hd" x="45" y="150" width="260" height="50" rx="6" fill="#a855f7"/>
+<rect id="cd" x="55" y="212" width="240" height="98" rx="8" fill="#eef2ff" stroke="#a855f7" stroke-width="2"/>
+<g id="pgt"><text id="hdt" x="60" y="183" font-size="16" fill="#111" font-family="serif">My Website</text>
+<text class="pl" x="68" y="235" font-size="13" fill="#111">HTML gives structure.</text>
+<text class="pl" x="68" y="255" font-size="13" fill="#111">CSS gives style.</text>
+<text class="pl" x="68" y="275" font-size="13" fill="#111">JavaScript adds actions.</text>
+<text class="pl" x="68" y="295" font-size="13" fill="#111">Images add visuals.</text></g>
+<g id="im"><rect x="60" y="322" width="130" height="90" rx="8" fill="#7dd3fc"/><circle cx="160" cy="348" r="12" fill="#fde047"/><polygon points="60,412 105,355 140,395 160,375 190,412" fill="#16a34a"/></g>
+<g id="js"><rect x="205" y="345" width="90" height="34" rx="17" fill="#facc15"/><text x="250" y="367" text-anchor="middle" font-size="13" font-weight="700" fill="#111">Click me</text></g></g>
+<g id="chips"></g>
+<text x="30" y="449" font-size="10" fill="#7f9bd6">DOWNLOADED RESOURCES</text>
+<!-- server -->
+<text x="785" y="97" text-anchor="middle" font-size="15" font-weight="700" fill="#22d3ee">SERVER</text>
+<rect id="srG" x="640" y="105" width="290" height="330" rx="12" fill="none" stroke="#22d3ee" stroke-width="5" filter="url(#gl)" opacity="0"/>
+<rect x="640" y="105" width="290" height="330" rx="12" fill="#0f1c44" stroke="#2f6fe0" stroke-width="2"/>
+<circle cx="660" cy="122" r="4" fill="#22c55e"/><circle cx="674" cy="122" r="4" fill="#3b82f6"/>
+<text x="655" y="148" font-size="10" fill="#7f9bd6">FILES ON DISK</text>
+<g id="rows"></g>
+<text id="miss" x="655" y="290" font-size="12" font-weight="700" fill="#f59e0b">✗ File not found on disk</text>
+<text x="655" y="314" font-size="10" fill="#7f9bd6">SERVER LOG</text>
+<g id="steps"></g>
+<g id="gear"><circle r="26" fill="none" stroke="#22d3ee" stroke-width="10" stroke-dasharray="8 6"/><circle r="17" fill="#0f1c44" stroke="#22d3ee" stroke-width="3"/><circle r="5" fill="#22d3ee"/></g>
+<text x="865" y="232" text-anchor="middle" font-size="10" fill="#7f9bd6">PROCESSING</text>
+<g id="err"><polygon points="0,-24 24,18 -24,18" fill="#ef4444"/><text y="12" text-anchor="middle" font-size="26" font-weight="800" fill="#fff">!</text></g>
+<g id="ff"><rect x="-48" y="-12" width="96" height="24" rx="5" id="ffr"/><text id="fft" y="5" text-anchor="middle" font-size="12" font-weight="700" fill="#111"></text></g>
+<!-- packet -->
+<g id="pk"><text id="pkt" y="-30" text-anchor="middle" font-size="12" font-weight="800"></text><rect id="pkr" x="-62" y="-22" width="124" height="44" rx="9" stroke="#fff" stroke-width="2"/><text id="p1" y="-3" text-anchor="middle" font-size="13" font-weight="800"></text><text id="p2" y="13" text-anchor="middle" font-size="12"></text></g>
+<g id="tok"><circle r="16" id="tkc"/><text id="tkt" y="4" text-anchor="middle" font-size="10" font-weight="800" fill="#111"></text></g>
+<g id="cur"><polygon points="0,0 0,20 6,15 11,25 15,23 10,13 18,13" fill="#fff" stroke="#000"/></g>
+<!-- analogy -->
+<g id="an"><rect x="30" y="100" width="900" height="340" rx="14" fill="#081028" stroke="#22d3ee" stroke-width="2"/>
+<text x="480" y="132" text-anchor="middle" font-size="18" font-weight="700" fill="#22d3ee">Analogy: ordering food at a restaurant</text>
+<text x="150" y="220" text-anchor="middle" font-size="70">🧑</text><text x="150" y="255" text-anchor="middle" font-size="14" fill="#9fb4e6">Customer</text>
+<text x="810" y="220" text-anchor="middle" font-size="70">🏪</text><text x="810" y="255" text-anchor="middle" font-size="14" fill="#9fb4e6">Restaurant</text>
+<text id="chef" x="810" y="160" text-anchor="middle" font-size="40">👨‍🍳</text>
+<text id="slip" font-size="38" y="200">📝</text><text id="food" font-size="38" y="290">🍔</text>
+<text class="ml" x="480" y="330" text-anchor="middle" font-size="19" font-weight="700" fill="#22d3ee">Browser = Customer</text>
+<text class="ml" x="480" y="358" text-anchor="middle" font-size="19" font-weight="700" fill="#3b82f6">HTTP Request = Order</text>
+<text class="ml" x="480" y="386" text-anchor="middle" font-size="19" font-weight="700" fill="#f59e0b">Server = Restaurant</text>
+<text class="ml" x="480" y="414" text-anchor="middle" font-size="19" font-weight="700" fill="#22c55e">HTTP Response = Returned Order</text></g>
+<!-- legend -->
+<g font-size="11" fill="#9fb4e6"><circle cx="330" cy="515" r="5" fill="#3b82f6"/><text x="340" y="519">Request</text><circle cx="400" cy="515" r="5" fill="#22c55e"/><text x="410" y="519">Success</text><circle cx="470" cy="515" r="5" fill="#f59e0b"/><text x="480" y="519">Missing</text><circle cx="540" cy="515" r="5" fill="#ef4444"/><text x="550" y="519">Error</text><circle cx="600" cy="515" r="5" fill="#a855f7"/><text x="610" y="519">CSS</text><circle cx="650" cy="515" r="5" fill="#facc15"/><text x="660" y="519">JS</text></g>
+</svg>
+<div id="sc"></div>
+<div id="sub"></div>
+<div id="bar"><button id="bp">▶ Play</button><button id="bq">⏸ Pause</button><button id="br">⟲ Replay</button><button id="s1" class="on">1x</button><button id="s2">2x</button><input id="pr" type="range" min="0" max="1000" value="0"><span id="tm" style="font-size:13px"></span></div>
+</div>
+<script>
+const g=id=>document.getElementById(id),L$=(a,b,p)=>a+(b-a)*p,E_=p=>p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2,SIN=p=>Math.sin(p*Math.PI);
+const B='#3b82f6',G='#22c55e',O='#f59e0b',R='#ef4444',PU='#a855f7',YE='#facc15',CY='#22d3ee',PK='#f472b6',TL='#2dd4bf',HOST='example.com';
+const files=[['index.html',CY],['style.css',PU],['app.js',YE],['image.jpg',PK],['font.woff2',TL]],RY=156,RS=28;
+const chipN=[['HTML',CY],['CSS',PU],['JS',YE],['IMG',PK],['FONT',TL]],chipX=i=>30+i*58+27;
+g('rows').innerHTML=files.map((f,i)=>`<rect id="r${i}" x="655" y="${RY+i*RS-10}" width="140" height="22" rx="5" stroke="${f[1]}" stroke-opacity=".6"/><rect x="661" y="${RY+i*RS-5}" width="8" height="12" rx="2" fill="${f[1]}"/><text x="677" y="${RY+i*RS+6}" font-size="12" fill="#cfe0ff">${f[0]}</text>`).join('');
+g('steps').innerHTML=[0,1,2].map(i=>`<circle id="c${i}" cx="668" cy="${340+i*32}" r="8" stroke="#22c55e" fill="#22c55e"/><text id="t${i}" x="686" y="${345+i*32}" font-size="13" fill="#e6f0ff"></text>`).join('');
+g('chips').innerHTML=chipN.map((c,i)=>`<rect id="k${i}" x="${30+i*58}" y="454" width="54" height="26" rx="6" fill="${c[1]}" stroke="${c[1]}"/><text x="${chipX(i)}" y="471" text-anchor="middle" font-size="11" font-weight="800" fill="#111">${c[0]}</text>`).join('');
+const cl=['<html>','  <link href="style.css">','  <script src="app.js">','  <img src="image.jpg">','  <link href="font.woff2">','</html>'],hc=[PU,YE,PK,TL];
+g('codeL').innerHTML=cl.map((s,i)=>`<rect id="h${i}" x="55" y="${164+i*20}" width="240" height="18" rx="3" opacity="0" fill="${hc[i-1]||'#000'}"/><text id="ct${i}" x="62" y="${177+i*20}" font-size="11" font-family="monospace" fill="#9fb4e6">${s.replace(/</g,'&lt;')}</text>`).join('');
+const icn=[['CSS','Styling',PU],['JS','Interactivity',YE],['IMG','Visual content',PK],['Aa','Typography',TL]];
+g('icons').innerHTML=icn.map((c,i)=>`<g id="ic${i}"><rect x="-22" y="-22" width="44" height="44" rx="9" fill="${c[2]}" fill-opacity=".25" stroke="${c[2]}" stroke-width="2"/><text y="5" text-anchor="middle" font-size="14" font-weight="800" fill="${c[2]}">${c[0]}</text><text y="38" text-anchor="middle" font-size="9" fill="#cfe0ff">${c[1]}</text><text id="ck${i}" x="16" y="-12" font-size="16" fill="#22c55e">✓</text></g>`).join('');
+
+/* ---------- timeline builder ---------- */
+const E=[],N=[],SC=[];let T=0,S={};
+const A=(d,f,k)=>{E.push({s:T,d,f,k});T+=d},P=(d,f,k)=>{E.push({s:T,d,f,k})},W=d=>{T+=d},K=f=>E.push({s:T,d:0,f,k:1});
+const nar=t=>N.push({s:T,t}),sc=n=>SC.push({s:T,n}),cap=(t,c,s2)=>K(()=>{S.cap=t;S.capc=c||'#fff';S.cap2=s2||''});
+const rq=(q,x)=>({x,y:235,top:'HTTP REQUEST',tc:B,l1:q.l1,l2:q.l2,c:B,sc:1,o:1});
+const rsp=(o,x,y=335)=>({x,y,top:'HTTP RESPONSE',tc:o.tc||G,l1:o.code,l2:o.l2||'',c:o.pc,sc:1,o:1});
+function cycle(o){
+ const f=o.fast?.6:1,idx=o.idx,m=o.mode||'ok',q={l1:'GET',l2:o.url};o.pc=o.pc||G;
+ K(()=>{S.st=[0,0,0];S.sel=-1;S.miss=0;S.err=0;S.c2=G;S.url=HOST+o.url});
+ if(o.n&&o.n[0])nar(o.n[0]);
+ if(!o.skip){cap('HTTP REQUEST',B,(o.ex?o.ex+' — ':'')+'GET '+o.url);A(2*f,p=>S.pk=rq(q,L$(325,630,E_(p))));P(.8*f,()=>S.pk=rq(q,630));A(.8*f,p=>S.srG=SIN(p))}
+ if(o.s)sc(o.s[0]);
+ cap('Request Received',B,'The packet enters the server');
+ A(.8*f,p=>S.pk={...rq(q,630+70*p),top:'',sc:1-.5*p,o:1-p});
+ if(o.n&&o.n[1])nar(o.n[1]);
+ A(.6*f,p=>S.st[0]=p,1);
+ cap('Server Processing',CY,'Processing GET '+o.url);
+ P(1.2*f,()=>S.spin=1);A(1.2*f,p=>S.st[1]=p,1);
+ if(m=='500'){P(1.3*f,()=>S.spin=1);A(1.3*f,p=>{S.err=p;S.st[2]=p;S.c2=R;S.stx[2]='Unexpected Error!'},1)}
+ else{P(1.4*f,()=>S.spin=1);A(1.4*f,p=>S.scan=Math.min(idx,Math.floor(p*(idx+1))));
+  if(m=='404')A(.8*f,p=>{S.miss=p;S.st[2]=p;S.c2=O;S.stx[2]='Resource NOT Found'},1);
+  else A(.8*f,p=>{S.sel=idx;S.st[2]=p},1)}
+ if(o.n&&o.n[2])nar(o.n[2]);
+ if(o.s)sc(o.s[1]);
+ cap('HTTP RESPONSE',o.tc||o.pc,o.code);
+ if(m=='ok'){const ry=RY+idx*RS;A(.8*f,p=>S.ff={x:L$(725,715,p),y:L$(ry,335,E_(p)),n:files[idx][0],c:files[idx][1]})}
+ A(.7*f,p=>S.pk={...rsp(o,L$(715,635,p)),sc:.5+.5*p,o:p});
+ A(2*f,p=>S.pk=rsp(o,L$(635,325,E_(p))));
+ const d=o.dock;
+ if(d==='html'){P(1,p=>S.brG=SIN(p));A(1,p=>S.pk={...rsp(o,L$(325,175,E_(p)),L$(335,280,E_(p))),sc:1-.6*p,o:1-.5*p});A(.6,p=>S.doc=p,1);K(()=>{S.ui=0;S.chip[0]=1})}
+ else if(d!=null){P(.9*f,p=>S.brG=SIN(p));A(.9*f,p=>S.pk={...rsp(o,L$(325,chipX(d),E_(p)),L$(335,467,E_(p))),sc:1-.5*p,o:1});K(()=>S.chip[d]=1)}
+ else{P(1,p=>S.pk={...rsp(o,325),sc:1-.5*p,o:1-p});A(1,p=>S.brG=SIN(p))}
+ cap(o.cap,o.tc||o.pc,o.cap2||'');
+ if(o.after)for(const[t,dd]of o.after){nar(t);W(dd)}else W(o.hold||.6);
+}
+/* SCENE 1 */
+const full=HOST+'/index.html',Q={l1:'GET',l2:'/index.html'};
+sc('Scene 1/7 — HTTP Request');
+nar('Ab finally browser server se ek request karta hai.');
+cap('The user wants a website',CY,'Type a URL and click OPEN WEBSITE');
+A(2,p=>S.url=full.slice(0,Math.ceil(p*full.length)),1);
+A(1.2,p=>S.cur={x:L$(285,205,E_(p)),y:L$(395,300,E_(p))});
+A(.6,p=>{S.cur={x:205,y:300};S.btn=SIN(p)});
+nar('Is communication ke liye HTTP use hota hai.');
+cap('HTTP REQUEST',B,'GET means: "please give me this resource"');
+A(3.2,p=>S.pk=rq(Q,L$(325,630,E_(p))));
+nar('Hypertext Transfer Protocol.');
+cap('HTTP = Hypertext Transfer Protocol',B,'GET /index.html — GET is used to request a resource');
+P(1.4,()=>S.pk=rq(Q,630));A(1.4,p=>S.srG=SIN(p));W(1.2);
+/* ANALOGY */
+sc('Restaurant Analogy');
+nar('Imagine karo tum ek restaurant mein jaate ho.');cap('Restaurant Analogy',CY);
+A(1,p=>S.an.o=p,1);K(()=>S.an.k=1);W(1.5);
+nar('Tum order dete ho.');A(2.2,p=>S.an.ord=p,1);K(()=>S.an.k=2);
+nar('Restaurant tumhara order receive karta hai aur uske according response deta hai.');
+A(1.8,p=>S.an.prep=p,1);K(()=>S.an.k=3);A(2.2,p=>S.an.food=p,1);K(()=>S.an.k=4);
+nar('HTTP communication ko samajhne ke liye ye ek simple analogy hai.');W(2.5);A(.8,p=>S.an.o=1-p,1);
+/* SCENES 2 & 3 */
+sc('Scene 2/7 — Server Processes the Request');
+cycle({skip:1,url:'/index.html',idx:0,code:'200 OK',pc:G,dock:'html',cap:'HTML Document Received',cap2:'Browser got index.html',hold:1.5,
+ s:['Scene 2/7 — Server Processes the Request','Scene 3/7 — HTTP Response'],
+ n:['Browser request bhejta hai.','Server request process karta hai.','Aur server response return karta hai.']});
+/* SCENE 4 */
+sc('Scene 4/7 — HTTP Status Codes');
+cycle({ex:'Example A',url:'/index.html',idx:0,code:'200 OK',pc:G,cap:'200 OK — Request Successful',
+ n:['For example, browser ek GET request bhej sakta hai.','GET ka use generally kisi resource ko retrieve karne ke liye hota hai.','Server response mein status code bhi return karta hai.'],
+ after:[['Jaise:',1],['200 — OK.',1.5],['Matlab request successful hui.',2]]});
+cycle({ex:'Example B',url:'/missing.html',idx:4,mode:'404',code:'404 Not Found',pc:O,cap:'404 — Requested Resource Not Found',
+ after:[['404 — Not Found.',2],['Requested resource nahi mila.',2.5]]});
+cycle({ex:'Example C',url:'/report.html',idx:0,mode:'500',code:'500 Server Error',pc:R,cap:'500 — Internal Server Error',
+ after:[['500 — Internal Server Error.',2],['Server ke andar unexpected problem aa gayi.',3]]});
+/* SCENE 5 */
+sc('Scene 5/7 — Browser Needs More Resources');
+K(()=>{S.st=[0,0,0];S.sel=-1;S.miss=0;S.err=0;S.url=full});
+nar('Lekin ab ek aur interesting cheez hone wali hai.');cap('Browser reads index.html',CY,'Parsing the HTML document...');
+A(1.2,p=>{S.doc=1-p;S.code=p},1);
+nar('Server ne sirf ek HTML document return kiya ho, toh bhi modern website ke liye aur resources ki zaroorat ho sakti hai.');
+A(3.6,p=>{S.sb=p<1?p:-1;for(let i=0;i<4;i++)S.hl[i]=Math.max(0,Math.min(1,(p*6-(i+1.2))*4))},1);
+cap('HTML received, but more resources are required!',O,'style.css · app.js · image.jpg · font.woff2');
+for(let i=0;i<4;i++){A(.7,p=>S.ic[i]=p,1);W(.3)}
+for(const[t,x]of[['Images.',2],['CSS.',0],['JavaScript.',1],['Fonts.',3],['Aur bahut kuch.',-1]]){nar(t);A(1.1,()=>S.pu=x)}
+/* SCENE 6 */
+sc('Scene 6/7 — Requesting Additional Resources');
+cycle({url:'/style.css',idx:1,code:'200 OK',l2:'style.css',pc:PU,dock:1,cap:'style.css downloaded',cap2:'CSS — Styling',fast:1});
+cycle({url:'/app.js',idx:2,code:'200 OK',l2:'app.js',pc:YE,dock:2,cap:'app.js downloaded',cap2:'JavaScript — Interactivity',fast:1});
+cycle({url:'/image.jpg',idx:3,code:'200 OK',l2:'image.jpg',pc:PK,dock:3,cap:'image.jpg downloaded',cap2:'Image — Visual content',fast:1});
+cycle({url:'/font.woff2',idx:4,code:'200 OK',l2:'font.woff2',pc:TL,dock:4,cap:'font.woff2 downloaded',cap2:'Font — Typography',fast:1});
+/* SCENE 7 */
+sc('Scene 7/7 — Browser Builds the Website');
+nar('Ab browser in resources ko process karega.');
+K(()=>{S.st=[0,0,0];S.sel=-1;S.ic=[0,0,0,0];S.code=0;S.doc=0;S.url=full});
+cap('Browser Processing Resources...',CY,'HTML = Structure');
+A(1.4,p=>{S.sw=p;S.L.h=p},1);W(.6);
+const lay=(ci,col,lab,key,sub)=>{cap('Browser Processing Resources...',col,sub);A(1,p=>S.tok={x:L$(chipX(ci),175,E_(p)),y:L$(467,300,E_(p))-SIN(p)*50,c:col,l:lab});A(1.3,p=>S.L[key]=p,1)};
+lay(1,PU,'CSS','c','CSS → Styling layer');lay(2,YE,'JS','j','JavaScript → Functionality layer');
+lay(3,PK,'IMG','i','Image → Visual layer');lay(4,TL,'Aa','f','Font → Typography layer');
+nar('Aur tab tumhe woh website dikhegi jiske liye tumne click kiya tha.');
+cap('Website Successfully Loaded!',G,'This is the page you clicked for');
+K(()=>S.fin=1);A(3.5,p=>S.brG=.5+.5*Math.abs(Math.sin(p*Math.PI*3)));W(2);
+const TOT=T;
+
+/* ---------- render ---------- */
+let t=0,play=true,spd=1,drag=false,last=performance.now();
+function frame(){
+ S={pk:null,srG:0,brG:0,fin:0,ui:1,url:'',cur:null,btn:0,st:[0,0,0],stx:['Request Received','Processing GET Request','Resource Found'],c2:G,sel:-1,scan:-1,miss:0,err:0,spin:0,ff:null,cap:'',capc:'#fff',cap2:'',doc:0,code:0,sb:-1,hl:[0,0,0,0],ic:[0,0,0,0],pu:-1,chip:[0,0,0,0,0],sw:0,L:{h:0,c:0,f:0,j:0,i:0},tok:null,an:{o:0,ord:0,prep:0,food:0,k:0}};
+ for(const e of E){if(t<e.s)continue;if(t>e.s+e.d&&!e.k)continue;e.f(e.d?Math.min(1,(t-e.s)/e.d):1)}
+ draw();
+}
+function draw(){
+ const k=S.pk,p=g('pk');
+ if(k){p.style.display='';p.setAttribute('transform',`translate(${k.x} ${k.y}) scale(${k.sc})`);p.style.opacity=k.o;g('pkr').setAttribute('fill',k.c);g('pkt').textContent=k.top;g('pkt').setAttribute('fill',k.tc);g('p1').textContent=k.l1;g('p2').textContent=k.l2;const tc=k.c==YE?'#111':'#fff';g('p1').setAttribute('fill',tc);g('p2').setAttribute('fill',tc)}else p.style.display='none';
+ g('l1').setAttribute('stroke-dashoffset',-t*40);g('l2').setAttribute('stroke-dashoffset',t*40);
+ g('cap').textContent=S.cap;g('cap').setAttribute('fill',S.capc);g('cap2').textContent=S.cap2;
+ g('srG').style.opacity=S.srG;g('brG').style.opacity=S.brG;g('brG').setAttribute('stroke',S.fin?G:CY);
+ g('url').textContent=S.url;g('ui').style.display=S.ui?'':'none';
+ g('cur').style.display=S.cur?'':'none';if(S.cur)g('cur').setAttribute('transform',`translate(${S.cur.x} ${S.cur.y})`);
+ g('btn').setAttribute('transform',`translate(175 285) scale(${1-.1*S.btn}) translate(-175 -285)`);
+ g('btn').firstChild.setAttribute('fill',S.btn>0?'#1d4ed8':B);
+ for(let i=0;i<3;i++){g('c'+i).setAttribute('fill-opacity',S.st[i]);g('c'+i).setAttribute('stroke',i==2?S.c2:G);if(i==2)g('c2').setAttribute('fill',S.c2);g('t'+i).textContent=S.st[i]>0?S.stx[i]:'';g('t'+i).setAttribute('opacity',.3+.7*S.st[i])}
+ for(let i=0;i<5;i++){const r=g('r'+i);r.setAttribute('fill',S.sel==i?G:S.scan==i&&S.spin?(S.miss||S.stx[2]=='Resource NOT Found'?O:CY):'#142a63');r.setAttribute('fill-opacity',S.sel==i?.4:S.scan==i&&S.spin?.45:1)}
+ const gr=g('gear');gr.setAttribute('transform',`translate(865 185) rotate(${S.spin?t*160:0})`);gr.style.opacity=S.spin||S.err?1:.35;gr.querySelectorAll('circle').forEach(c=>c.setAttribute('stroke',S.err>0?R:CY));
+ g('miss').style.opacity=S.miss;
+ g('err').setAttribute('transform',`translate(865 275) scale(${S.err*(1+.08*Math.sin(t*14))})`);g('err').style.opacity=S.err;
+ const ff=S.ff;g('ff').style.display=ff?'':'none';if(ff){g('ff').setAttribute('transform',`translate(${ff.x} ${ff.y})`);g('ffr').setAttribute('fill',ff.c);g('fft').textContent=ff.n}
+ g('doc').style.display=S.doc>0?'':'none';g('doc').setAttribute('transform',`translate(0 0)`);g('doc').firstChild.setAttribute('transform',`translate(175 275) scale(${S.doc}) `);
+ g('code').style.display=S.code>0?'':'none';g('code').style.opacity=S.code;
+ for(let i=0;i<6;i++){if(i>0&&i<5){g('h'+i).setAttribute('opacity',S.hl[i-1]*.45);g('ct'+i).setAttribute('fill',S.hl[i-1]>.5?'#fff':'#9fb4e6')}}
+ g('scn').style.display=S.sb>=0?'':'none';g('scn').setAttribute('y',160+S.sb*130);
+ for(let i=0;i<4;i++){const ic=g('ic'+i);ic.style.display=S.ic[i]>0?'':'none';ic.setAttribute('transform',`translate(${75+i*57} 335) scale(${S.ic[i]*(S.pu==i?1.3:1)})`);g('ck'+i).style.opacity=S.chip[i+1]}
+ for(let i=0;i<5;i++)g('k'+i).setAttribute('fill-opacity',.12+.88*S.chip[i]);
+ const l=S.L;g('pg').style.display=S.sw?'':'none';g('pgw').style.opacity=S.sw;
+ g('hd').style.opacity=l.c;g('cd').style.opacity=l.c;g('pgt').style.opacity=l.h;
+ const h=g('hdt');h.setAttribute('fill',l.c>.5?'#fff':'#111');h.setAttribute('font-size',16+6*l.f);h.setAttribute('font-weight',l.f>.5?800:400);h.setAttribute('font-family',l.f>.5?'Trebuchet MS,Arial,sans-serif':'serif');
+ document.querySelectorAll('.pl').forEach(x=>{x.setAttribute('fill',l.c>.5?'#312e81':'#111');x.setAttribute('font-family',l.f>.5?'Trebuchet MS,Arial,sans-serif':'serif')});
+ g('im').style.opacity=l.i;g('im').setAttribute('transform',`translate(0 ${(1-l.i)*25})`);
+ g('js').style.opacity=l.j;g('js').setAttribute('transform',`translate(250 362) scale(${1+.07*l.j*Math.sin(t*6)}) translate(-250 -362)`);
+ const tk=S.tok;g('tok').style.display=tk?'':'none';if(tk){g('tok').setAttribute('transform',`translate(${tk.x} ${tk.y})`);g('tkc').setAttribute('fill',tk.c);g('tkt').textContent=tk.l}
+ for(let i=0;i<5;i++){g('k'+i)}
+ const a=S.an;g('an').style.display=a.o>0?'':'none';g('an').style.opacity=a.o;
+ g('slip').setAttribute('x',L$(190,745,E_(a.ord))-19);g('slip').style.opacity=a.ord>0&&a.food==0?1:0;
+ g('food').setAttribute('x',L$(745,200,E_(a.food))-19);g('food').style.opacity=a.food>0?1:0;
+ g('chef').style.opacity=a.prep>0&&a.food==0?1:0;g('chef').setAttribute('y',160-6*Math.abs(Math.sin(t*8)));
+ document.querySelectorAll('.ml').forEach((x,i)=>x.style.opacity=a.k>i?1:0);
+ let sn='',sb='';for(const x of SC)if(t>=x.s)sn=x.n;for(const x of N)if(t>=x.s)sb=x.t;
+ g('sc').textContent=sn;g('sub').textContent=sb?'🔊 '+sb:'';
+ if(!drag)g('pr').value=t/TOT*1000;g('tm').textContent=Math.floor(t)+'s / '+Math.floor(TOT)+'s';
+ g('bp').classList.toggle('on',play);g('bq').classList.toggle('on',!play);
+}
+function loop(n){const dt=Math.min(.1,(n-last)/1000);last=n;if(play&&!drag){t+=dt*spd;if(t>=TOT){t=TOT;play=false}}frame();requestAnimationFrame(loop)}
+g('bp').onclick=()=>{if(t>=TOT)t=0;play=true};g('bq').onclick=()=>play=false;
+g('br').onclick=()=>{t=0;play=true};
+g('s1').onclick=()=>{spd=1;g('s1').classList.add('on');g('s2').classList.remove('on')};
+g('s2').onclick=()=>{spd=2;g('s2').classList.add('on');g('s1').classList.remove('on')};
+g('pr').oninput=e=>{drag=true;t=e.target.value/1000*TOT};g('pr').onchange=()=>drag=false;
+g('pr').onpointerup=()=>drag=false;
+requestAnimationFrame(n=>{last=n;loop(n)});
+</script>
+</body></html>

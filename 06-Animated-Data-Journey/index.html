@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Animated Internet Data Journey</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#020812;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
+body{display:flex;align-items:center;justify-content:center}
+#stage{position:relative;width:min(100vw,calc(100vh*16/9));aspect-ratio:16/9;container-type:inline-size;background:#050d22;overflow:hidden}
+#svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+#cap{position:absolute;left:3cqw;top:2.4cqw;color:#cdf3ff;font-size:clamp(13px,1.7cqw,30px);font-weight:600;letter-spacing:.01em;text-shadow:0 0 1.2cqw rgba(37,230,255,.75)}
+@keyframes capIn{from{opacity:0;transform:translateY(.6cqw)}to{opacity:1;transform:none}}
+#hud{position:absolute;left:3cqw;right:3cqw;bottom:2cqw;display:flex;align-items:center;gap:1.6cqw;color:#9fdcff;font-size:clamp(11px,1.25cqw,22px)}
+#time{font-variant-numeric:tabular-nums;min-width:9.6em;white-space:nowrap}
+#bar{flex:1;height:max(4px,.5cqw);background:rgba(80,150,255,.18);border-radius:99px;overflow:hidden}
+#fill{height:100%;width:0;background:linear-gradient(90deg,#1b6bff,#25e6ff);box-shadow:0 0 1cqw #25e6ff}
+#replay{font:inherit;color:#d9f8ff;background:rgba(10,30,70,.75);border:1px solid #25e6ff;border-radius:99px;padding:.45em 1.2em;cursor:pointer;white-space:nowrap;transition:box-shadow .2s,background .2s}
+#replay:hover{background:rgba(20,60,130,.85);box-shadow:0 0 1.2cqw rgba(37,230,255,.7)}
+#replay:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.flow{stroke-dasharray:9 13;animation:dash .9s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-22}}
+.led{fill:#25e6ff;animation:blink 1.1s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:.2}50%{opacity:1}}
+</style>
+</head>
+<body>
+<div id="stage">
+<svg id="svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<radialGradient id="bg" cx=".5" cy=".5" r=".7"><stop offset="0" stop-color="#0c2250"/><stop offset="1" stop-color="#030a1c"/></radialGradient>
+<radialGradient id="gl" cx=".38" cy=".35" r=".85"><stop offset="0" stop-color="#1f6bde"/><stop offset=".6" stop-color="#0a2a6e"/><stop offset="1" stop-color="#061440"/></radialGradient>
+<radialGradient id="hl"><stop offset="0" stop-color="#25e6ff" stop-opacity=".85"/><stop offset="1" stop-color="#25e6ff" stop-opacity="0"/></radialGradient>
+<linearGradient id="cy" x1="0" x2="1"><stop offset="0" stop-color="#1b6bff"/><stop offset="1" stop-color="#25e6ff"/></linearGradient>
+<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a3d9c"/><stop offset="1" stop-color="#6fd8ff"/></linearGradient>
+<pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse"><path d="M80 0H0V80" fill="none" stroke="#1b4fa8" stroke-opacity=".18"/></pattern>
+<filter id="glow" x="-150%" y="-150%" width="400%" height="400%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<clipPath id="gclip"><circle cx="820" cy="450" r="130"/></clipPath>
+<clipPath id="sclip"><rect x="70" y="320" width="300" height="190" rx="8"/></clipPath>
+</defs>
+
+<rect x="-1600" y="-900" width="4800" height="2700" fill="url(#bg)"/>
+<rect x="-1600" y="-900" width="4800" height="2700" fill="url(#grid)"/>
+
+<g id="gDecoy"></g>
+
+<g id="gRoute" fill="none" stroke-linecap="round">
+  <path id="route" stroke="#1b6bff" stroke-opacity=".4" stroke-width="4"/>
+  <path id="flow" class="flow" stroke="#25e6ff" stroke-opacity=".85" stroke-width="2.5"/>
+  <path id="ret" class="flow" stroke="#25e6ff" stroke-width="2.5" opacity="0"/>
+</g>
+
+<g id="gGlobe">
+  <circle id="gHalo" cx="820" cy="450" r="200" fill="url(#hl)" opacity=".2"/>
+  <circle cx="820" cy="450" r="130" fill="url(#gl)"/>
+  <g clip-path="url(#gclip)">
+    <g id="land" fill="rgba(37,230,255,.4)" stroke="#25e6ff" stroke-opacity=".7">
+      <path id="lp" d="M700 410q20-30 55-20t30 40-30 30-45-10zM800 480q25-10 40 10t-5 40-35-5zM870 400q30-20 50 5t-10 35-40-10z"/>
+      <use href="#lp" x="260"/>
+    </g>
+    <g fill="none" stroke="#25e6ff" stroke-opacity=".3">
+      <path d="M690 370Q820 350 950 370"/><path d="M690 410Q820 400 950 410"/><path d="M690 450H950"/><path d="M690 490Q820 500 950 490"/><path d="M690 530Q820 550 950 530"/>
+    </g>
+    <g id="mer" fill="none" stroke="#25e6ff" stroke-opacity=".35"></g>
+  </g>
+  <circle id="gRim" cx="820" cy="450" r="130" fill="none" stroke="#25e6ff" stroke-width="3"/>
+  <ellipse cx="820" cy="450" rx="175" ry="48" transform="rotate(-20 820 450)" fill="none" stroke="#25e6ff" stroke-opacity=".45" stroke-dasharray="3 8"/>
+  <circle id="sat" r="6" fill="#bff6ff" filter="url(#glow)"/>
+</g>
+
+<g id="gRouters"></g>
+
+<g id="laptop">
+  <ellipse id="lHalo" cx="220" cy="420" rx="230" ry="170" fill="url(#hl)" opacity=".18"/>
+  <rect x="58" y="308" width="324" height="214" rx="14" fill="#0b1a3d" stroke="#25a7ff" stroke-width="3"/>
+  <rect x="70" y="320" width="300" height="190" rx="8" fill="#050d22"/>
+  <g clip-path="url(#sclip)">
+    <circle id="spin" cx="220" cy="415" r="20" fill="none" stroke="#25e6ff" stroke-width="4" stroke-dasharray="60 70" stroke-linecap="round"/>
+    <rect id="pgBg" x="70" y="320" width="300" height="190" fill="#eaf3ff" opacity="0"/>
+    <g id="pgCss" opacity="0">
+      <rect x="70" y="320" width="300" height="28" fill="url(#cy)"/><circle cx="87" cy="334" r="6" fill="#fff"/>
+      <rect x="250" y="330" width="34" height="8" rx="4" fill="#fff" opacity=".65"/><rect x="292" y="330" width="34" height="8" rx="4" fill="#fff" opacity=".65"/>
+      <rect x="70" y="494" width="300" height="16" fill="#0b1d4a"/>
+    </g>
+    <g id="pgImg" opacity="0">
+      <rect x="84" y="362" width="130" height="110" rx="8" fill="url(#sky)"/>
+      <path d="M84 472V432l35-32 30 30 25-20 40 38v24z" fill="#124aa8"/><circle cx="188" cy="384" r="9" fill="#fff"/>
+    </g>
+    <g id="pgTxt" opacity="0">
+      <rect x="230" y="364" width="110" height="12" rx="4" fill="#0b1d4a"/>
+      <rect x="230" y="388" width="126" height="6" rx="3" fill="#6f8ac0"/><rect x="230" y="401" width="118" height="6" rx="3" fill="#6f8ac0"/><rect x="230" y="414" width="80" height="6" rx="3" fill="#6f8ac0"/>
+      <rect x="230" y="440" width="60" height="20" rx="10" fill="url(#cy)"/>
+    </g>
+    <g id="pgWf" opacity="0" fill="none" stroke="#38d9ff" stroke-width="1.6" stroke-dasharray="5 4">
+      <rect x="76" y="324" width="288" height="20"/><rect x="84" y="362" width="130" height="110"/><rect x="230" y="364" width="126" height="56"/><rect x="230" y="440" width="60" height="20"/><rect x="76" y="490" width="288" height="16"/>
+    </g>
+  </g>
+  <rect id="sGlow" x="70" y="320" width="300" height="190" rx="8" fill="none" stroke="#25e6ff" stroke-width="4" opacity="0" filter="url(#glow)"/>
+  <path d="M30 522H410L396 548H44z" fill="#12234d" stroke="#25a7ff" stroke-width="2"/>
+  <rect x="170" y="526" width="100" height="6" rx="3" fill="#0a1630"/>
+</g>
+
+<g id="server">
+  <rect id="sHalo" x="1244" y="314" width="212" height="282" rx="18" fill="none" stroke="#25e6ff" stroke-width="4" opacity="0" filter="url(#glow)"/>
+  <rect x="1260" y="330" width="180" height="250" rx="12" fill="#0b1a3d" stroke="#25a7ff" stroke-width="3"/>
+  <g id="slots"></g>
+  <path d="M1290 580v16h120v-16" fill="#12234d" stroke="#25a7ff" stroke-width="2"/>
+</g>
+
+<g id="gArrows"></g>
+<g id="gPackets"></g>
+<g id="gTiles"></g>
+</svg>
+
+<div id="cap"></div>
+<div id="hud">
+  <span id="time">00.0 / 15.0 s</span>
+  <div id="bar"><div id="fill"></div></div>
+  <button id="replay" type="button">&#8635; Replay Animation</button>
+</div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var NS='http://www.w3.org/2000/svg',DUR=15;
+var $=function(id){return document.getElementById(id)};
+var svg=$('svg');
+function el(tag,attrs,parent){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+var cl=function(x,a,b){a=a===undefined?0:a;b=b===undefined?1:b;return Math.min(b,Math.max(a,x))};
+var ss=function(x){x=cl(x);return x*x*(3-2*x)};
+var lerp=function(a,b,k){return a+(b-a)*k};
+var backOut=function(x){var c=1.70158;x=cl(x)-1;return 1+(c+1)*x*x*x+c*x*x};
+
+/* ---------- route ---------- */
+var ROUTE='M250 415C300 415 340 440 400 440S480 330 540 330S640 550 700 550S760 450 820 450S940 330 1010 330S1130 450 1230 450';
+var RET='M1350 318C1150 20 450 20 250 300';
+$('route').setAttribute('d',ROUTE);$('flow').setAttribute('d',ROUTE);$('ret').setAttribute('d',RET);
+var route=$('route'),ret=$('ret'),L=route.getTotalLength(),LR=ret.getTotalLength();
+var frac=function(x,y){var best=1e9,bf=0;for(var i=0;i<=1200;i++){var p=route.getPointAtLength(L*i/1200),d=Math.hypot(p.x-x,p.y-y);if(d<best){best=d;bf=i/1200}}return bf};
+var fN1=frac(400,440),fG=frac(820,450),fGin=0;
+for(var i=0;i<=1200;i++){var q=route.getPointAtLength(L*i/1200);if(Math.hypot(q.x-820,q.y-450)<130){fGin=i/1200;break}}
+
+/* ---------- background network ---------- */
+var RT=[[540,330],[700,550],[1010,330]];
+var DC=[[120,150],[330,110],[520,170],[700,110],[900,150],[1100,100],[1300,120],[1500,70],[160,700],[380,760],[600,740],[820,790],[1040,720],[1260,780],[1500,730],[1000,610],[1520,540],[470,590]];
+var all=DC.concat(RT),gD=$('gDecoy'),dots=[];
+all.forEach(function(p,i){
+  all.map(function(q,j){return[Math.hypot(p[0]-q[0],p[1]-q[1]),j]}).filter(function(a){return a[1]!==i}).sort(function(a,b){return a[0]-b[0]}).slice(0,2)
+  .forEach(function(a){var q=all[a[1]];el('line',{x1:p[0],y1:p[1],x2:q[0],y2:q[1],stroke:'#1d7dff','stroke-opacity':.2,'stroke-width':1.5},gD)});
+});
+DC.forEach(function(p){dots.push(el('circle',{cx:p[0],cy:p[1],r:5,fill:'#25e6ff'},gD))});
+
+/* ---------- routers ---------- */
+var routers=RT.map(function(p,i){
+  var g=el('g',{transform:'translate('+p[0]+' '+p[1]+')'},$('gRouters'));
+  var halo=el('circle',{r:60,fill:'url(#hl)',opacity:0},g);
+  el('line',{x1:-22,y1:-13,x2:-28,y2:-34,stroke:'#25a7ff','stroke-width':3,'stroke-linecap':'round'},g);
+  el('line',{x1:22,y1:-13,x2:28,y2:-34,stroke:'#25a7ff','stroke-width':3,'stroke-linecap':'round'},g);
+  el('circle',{cx:-28,cy:-34,r:3.5,fill:'#25e6ff'},g);el('circle',{cx:28,cy:-34,r:3.5,fill:'#25e6ff'},g);
+  var body=el('rect',{x:-36,y:-14,width:72,height:28,rx:7,fill:'#0b1a3d',stroke:'#25a7ff','stroke-width':3},g);
+  [-18,-6,6].forEach(function(x,k){var c=el('circle',{cx:x,cy:0,r:3.2,class:'led'},g);c.style.animationDelay=(k*.3+i*.2)+'s'});
+  el('rect',{x:12,y:-4,width:16,height:8,rx:2,fill:'#12306a'},g);
+  return{halo:halo,body:body,f:frac(p[0],p[1])};
+});
+
+/* ---------- globe meridians ---------- */
+var mer=[0,1,2,3].map(function(){return el('ellipse',{cx:820,cy:450,rx:130,ry:130},$('mer'))});
+
+/* ---------- server slots ---------- */
+[346,416,486].forEach(function(y,s){
+  el('rect',{x:1274,y:y,width:152,height:58,rx:6,fill:'#07122e',stroke:'#1b4fa8','stroke-width':2},$('slots'));
+  [14,24,34,44].forEach(function(o){el('line',{x1:1330,y1:y+o,x2:1414,y2:y+o,stroke:'#1d4f9e','stroke-width':3,'stroke-linecap':'round'},$('slots'))});
+  [20,38].forEach(function(o,k){var c=el('circle',{cx:1292,cy:y+o,r:4,class:'led'},$('slots'));c.style.animationDelay=(s*.35+k*.5)+'s'});
+});
+
+/* ---------- packets ---------- */
+var NPK=10,GAP=.22,TL=[.06,.12,.18],packs=[];
+for(var i=0;i<NPK;i++){
+  var g=el('g',{},$('gPackets')),tr=TL.map(function(_,k){return el('circle',{r:5-k,fill:'#25e6ff',opacity:.5-k*.15},g)});
+  var head=el('g',{},g);
+  el('rect',{x:-8,y:-8,width:16,height:16,rx:4,fill:'#1b8cff',stroke:'#7fe8ff','stroke-width':2,filter:'url(#glow)'},head);
+  el('rect',{x:-3.5,y:-3.5,width:7,height:7,rx:2,fill:'#e8fdff'},head);
+  packs.push({g:g,tr:tr,head:head});
+}
+var KEYS=[[.5,0],[3,fN1],[6,fGin],[9,1]];
+function F(tau){
+  if(tau<=KEYS[0][0])return -1;if(tau>9)return 2;
+  for(var i=1;i<4;i++)if(tau<=KEYS[i][0]){var a=KEYS[i-1],b=KEYS[i];return a[1]+(b[1]-a[1])*(tau-a[0])/(b[0]-a[0])}
+}
+
+/* ---------- moving arrows ---------- */
+var chev=[],rchev=[];
+for(var i=0;i<6;i++)chev.push(el('polygon',{points:'-9,-7 7,0 -9,7 -4,0',fill:'#25e6ff',filter:'url(#glow)'},$('gArrows')));
+for(var i=0;i<4;i++)rchev.push(el('polygon',{points:'-9,-7 7,0 -9,7 -4,0',fill:'#25e6ff',filter:'url(#glow)'},$('gArrows')));
+
+/* ---------- webpage component tiles ---------- */
+var TD=[
+ {n:'HTML',c:'#25e6ff',h:[1130,215],tg:[220,415]},
+ {n:'CSS',c:'#4d8dff',h:[1260,155],tg:[220,336]},
+ {n:'Images',c:'#7ad7ff',h:[1390,155],tg:[150,415]},
+ {n:'Text',c:'#b9c9ff',h:[1520,215],tg:[295,415]}];
+var tiles=TD.map(function(d,i){
+  var g=el('g',{},$('gTiles')),b=el('g',{},g);
+  el('rect',{x:-55,y:-38,width:110,height:76,rx:12,fill:'#0a1c45',stroke:d.c,'stroke-width':3,filter:'url(#glow)'},b);
+  if(i===0)el('text',{x:0,y:10,'text-anchor':'middle','font-size':30,'font-weight':700,'font-family':'Consolas,Menlo,monospace',fill:d.c},b).textContent='</>';
+  if(i===1){el('rect',{x:-34,y:-24,width:68,height:10,rx:5,fill:'#1b6bff'},b);el('rect',{x:-34,y:-8,width:46,height:10,rx:5,fill:'#25e6ff'},b);el('rect',{x:-34,y:8,width:58,height:10,rx:5,fill:'#6aa8ff'},b)}
+  if(i===2){el('rect',{x:-38,y:-26,width:76,height:52,rx:8,fill:'url(#sky)'},b);el('path',{d:'M-38 26V8l22-20 18 16 14-10 22 22v10z',fill:'#124aa8'},b);el('circle',{cx:18,cy:-12,r:6,fill:'#fff'},b)}
+  if(i===3){el('rect',{x:-34,y:-24,width:48,height:9,rx:4,fill:'#fff'},b);[[-8,68],[4,60],[16,40]].forEach(function(r){el('rect',{x:-34,y:r[0],width:r[1],height:6,rx:3,fill:'#8aa4d6'},b)})}
+  var lab=el('text',{x:0,y:62,'text-anchor':'middle','font-size':17,'font-weight':600,fill:'#cdf3ff'},g);lab.textContent=d.n;
+  return{g:g,lab:lab,d:d,i:i};
+});
+var pieces=[$('pgWf'),$('pgCss'),$('pgImg'),$('pgTxt')];
+
+/* ---------- caption / HUD ---------- */
+var cap=$('cap'),capIdx=-1,CAPS=['Your browser sends a request','Data packets hop through routers','Crossing the globe to the server','The server returns the page files','Your browser assembles the webpage'];
+function setCap(t){var k=Math.min(4,Math.floor(t/3));if(k===capIdx)return;capIdx=k;cap.textContent=CAPS[k];cap.style.animation='none';void cap.offsetWidth;cap.style.animation='capIn .6s ease both'}
+
+/* ---------- frame ---------- */
+function draw(t){
+  setCap(t);
+  $('time').textContent=(t<10?'0':'')+t.toFixed(1)+' / 15.0 s';
+  $('fill').style.width=(t/DUR*100)+'%';
+
+  /* camera zoom onto the finished page */
+  var z=ss((t-13)/2);
+  svg.setAttribute('viewBox',[lerp(0,-60,z),lerp(0,262,z),lerp(1600,560,z),lerp(900,315,z)].join(' '));
+
+  /* background twinkle */
+  dots.forEach(function(c,i){c.setAttribute('opacity',(.25+.2*Math.sin(t*2+i*1.7)).toFixed(3))});
+
+  /* laptop */
+  $('spin').setAttribute('transform','rotate('+(t*300)+' 220 415)');
+  $('sGlow').setAttribute('opacity',(t>.3&&t<3.2?.35+.35*Math.sin(t*9):0));
+  $('lHalo').setAttribute('opacity',(.15+.1*Math.sin(t*3)+.35*ss((t-14)/1)).toFixed(3));
+
+  /* globe */
+  var rot=t*.7;
+  mer.forEach(function(e,k){e.setAttribute('rx',(130*Math.abs(Math.cos(rot+k*Math.PI/4))).toFixed(2))});
+  $('land').setAttribute('transform','translate('+(-((t*22)%260))+' 0)');
+  var sa=t*1.4,px=175*Math.cos(sa),py=48*Math.sin(sa),th=-20*Math.PI/180;
+  $('sat').setAttribute('cx',820+px*Math.cos(th)-py*Math.sin(th));$('sat').setAttribute('cy',450+px*Math.sin(th)+py*Math.cos(th));
+
+  /* packets */
+  var gGlow=0,rG=[0,0,0],flash=0;
+  packs.forEach(function(pk,i){
+    var tau=t-i*GAP,p=F(tau);
+    if(p<0||p>1){pk.g.setAttribute('display','none');return}
+    pk.g.removeAttribute('display');
+    var pt=route.getPointAtLength(L*p),s=(.35+.65*ss(p/fN1*1.4))*Math.min(1,(1-p)/.03+.0001);
+    pk.head.setAttribute('transform','translate('+pt.x+' '+pt.y+') rotate('+(t*120+i*25)+') scale('+s.toFixed(3)+')');
+    pk.tr.forEach(function(c,k){var q=F(tau-TL[k]);if(q<0||q>1){c.setAttribute('display','none');return}c.removeAttribute('display');var tp=route.getPointAtLength(L*q);c.setAttribute('cx',tp.x);c.setAttribute('cy',tp.y)});
+    routers.forEach(function(r,k){rG[k]=Math.max(rG[k],Math.exp(-Math.pow((p-r.f)/.035,2)))});
+    gGlow=Math.max(gGlow,Math.exp(-Math.pow((p-fG)/.09,2)));
+  });
+  for(var i=0;i<NPK;i++)flash+=Math.exp(-Math.abs(t-(9+i*GAP))*5);
+  routers.forEach(function(r,k){r.halo.setAttribute('opacity',rG[k].toFixed(3));r.body.setAttribute('stroke-width',(3+3*rG[k]).toFixed(2))});
+  $('gRim').setAttribute('stroke-width',(3+5*gGlow).toFixed(2));
+  $('gHalo').setAttribute('opacity',(.2+.7*gGlow).toFixed(3));
+  $('sHalo').setAttribute('opacity',Math.min(1,flash*(t<12?1:0)).toFixed(3));
+
+  /* forward arrows */
+  var fa=ss((t-1)/1);
+  chev.forEach(function(c,k){var s=((t*.07+k/6)%1)*L,a=route.getPointAtLength(s),b=route.getPointAtLength(Math.min(L,s+2));
+    c.setAttribute('transform','translate('+a.x+' '+a.y+') rotate('+(Math.atan2(b.y-a.y,b.x-a.x)*180/Math.PI)+')');c.setAttribute('opacity',fa)});
+  /* return arrows (server to laptop) */
+  var ra=ss((t-9.8)/1)*(1-ss((t-14)/.8));
+  ret.setAttribute('opacity',(.55*ra).toFixed(3));
+  rchev.forEach(function(c,k){var s=((((t-10)*.16)+k/4)%1+1)%1*LR,a=ret.getPointAtLength(s),b=ret.getPointAtLength(Math.min(LR,s+2));
+    c.setAttribute('transform','translate('+a.x+' '+a.y+') rotate('+(Math.atan2(b.y-a.y,b.x-a.x)*180/Math.PI)+')');c.setAttribute('opacity',ra.toFixed(3))});
+
+  /* tiles: appear at server (9-12), fly to laptop (12-15) */
+  var arrive=[0,0,0,0];
+  tiles.forEach(function(T){
+    var i=T.i,d=T.d,sp=cl((t-(9+i*.7))/.6),fs=12+i*.25,fp=cl((t-fs)/1.9),e=ss(fp);
+    arrive[i]=ss((fp-.78)/.22);
+    if(sp<=0||fp>=1){T.g.setAttribute('display','none');return}
+    T.g.removeAttribute('display');
+    var k=backOut(sp),x=lerp(1350,d.h[0],k),y=lerp(330,d.h[1],k)+Math.sin(t*2.5+i*1.3)*5*(1-e)*ss(sp),sc=ss(sp);
+    if(fp>0){
+      var hx=d.h[0],hy=d.h[1],cx=(hx+d.tg[0])/2,cy=(hy+d.tg[1])/2-200,u=1-e;
+      x=u*u*hx+2*u*e*cx+e*e*d.tg[0];y=u*u*hy+2*u*e*cy+e*e*d.tg[1];sc=lerp(1,.55,e);
+    }
+    var rt=Math.sin(e*Math.PI)*(i%2?9:-9);
+    T.g.setAttribute('transform','translate('+x.toFixed(1)+' '+y.toFixed(1)+') rotate('+rt.toFixed(1)+') scale('+sc.toFixed(3)+')');
+    T.g.setAttribute('opacity',(1-ss((fp-.8)/.2)).toFixed(3));
+    T.lab.setAttribute('opacity',(1-ss(fp/.2)).toFixed(3));
+  });
+  var a=[0,1,2,3].map(function(i){return t>=12+i*.25+1.9?1:arrive[i]});
+  $('spin').setAttribute('opacity',(1-a[0]).toFixed(3));
+  $('pgWf').setAttribute('opacity',(a[0]*(1-.7*a[1])).toFixed(3));
+  $('pgBg').setAttribute('opacity',a[1].toFixed(3));$('pgCss').setAttribute('opacity',a[1].toFixed(3));
+  $('pgImg').setAttribute('opacity',a[2].toFixed(3));$('pgTxt').setAttribute('opacity',a[3].toFixed(3));
+}
+
+/* ---------- playback (requestAnimationFrame, exactly 15 s) ---------- */
+var start=0,raf=0;
+function loop(now){
+  var t=Math.max(0,(now-start)/1000),end=t>=DUR;
+  if(end)t=DUR;
+  draw(t);
+  if(!end)raf=requestAnimationFrame(loop);
+}
+function play(){cancelAnimationFrame(raf);capIdx=-1;start=performance.now();raf=requestAnimationFrame(loop)}
+$('replay').addEventListener('click',play);
+play();
+})();
+</script>
+</body>
+</html>
